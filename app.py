@@ -47,20 +47,24 @@ def doar():
 
 
 @app.route("/livros", methods=["GET"])
-def livros():
+def listar_livros():
+
     with sqlite3.connect("database.db") as conn:
-        conn.row_factory = sqlite3.Row
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM LIVROS")
-        livros = cursor.fetchall()
+        livros = conn.execute("SELECT * FROM LIVROS").fetchall()
 
-    livros_json = [
-        {"id": livro["id"], "titulo": livro["titulo"], "categoria": livro["categoria"],
-            "autor": livro["autor"], "image_url": livro["image_url"]}
-        for livro in livros
-    ]
+        livros_formatados = []
 
-    return jsonify(livros_json)
+        for item in livros:
+            dicionario_livros = {
+                "id": item[0],
+                "titulo": item[1],
+                "categoria": item[2],
+                "autor": item[3],
+                "image_url": item[4]
+            }
+            livros_formatados.append(dicionario_livros)
+
+    return jsonify(livros_formatados), 200
 
 
 if __name__ == "__main__":
