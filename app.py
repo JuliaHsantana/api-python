@@ -46,6 +46,23 @@ def doar():
     return jsonify({"Mensagem": "Livro cadastrado com sucesso !!"}), 201
 
 
+@app.route('/livros/<int:id>', methods=['DELETE'])
+def excluir_livro(id):
+    with sqlite3.connect("database.db") as conn:
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT * FROM LIVROS WHERE id = ?", (id,))
+        livro = cursor.fetchone()
+
+        if not livro:
+            return jsonify({'erro': 'Livro não encontrado'}), 404
+
+        cursor.execute("DELETE FROM LIVROS WHERE id = ?", (id,))
+        conn.commit()
+
+    return jsonify({'mensagem': 'Livro excluído com sucesso'}), 200
+
+
 @app.route("/livros", methods=["GET"])
 def listar_livros():
 
